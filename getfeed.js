@@ -13,7 +13,17 @@ var assert = require("assert");
 // if checkExist triggers submit, submit to hackernews with user cookie
 // next steps: correctly clip title and automate on some server, check every day or something
 
-// get storage
+// holy shit I'm writing tests!
+// check myCallback
+//
+// check checkExist
+//
+// check getNew
+//
+// check submit
+
+
+// get storage and initiate
 console.log("Instantiating and opening file");
 var current={};
 var shoop=[];
