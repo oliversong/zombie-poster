@@ -10,6 +10,8 @@ var assert = require("assert");
 // getNew opens data.csv and preps it
 // then calls myCallback
 // parses the article and calls checkExist on each async
+// if checkExist triggers submit, submit to hackernews with user cookie
+// next steps: correctly clip title and automate on some server, check every day or something
 
 // get storage
 console.log("Instantiating and opening file");
@@ -26,7 +28,7 @@ function myCallback (error, meta, article){
         //console.log('%s-%s-%s', meta.title, meta.link, meta.xmlUrl);
         //console.log('Articles');
         article.forEach(function (article){
-            console.log("Currently checking: "+article.title);
+            console.log("Currently checking: "+article.title); //should parse title for <80 char restriction
             checkExist(article.link,article.title);
         });
     }
@@ -73,15 +75,12 @@ function getNew (err,fd){
 //submit to hackernews
 function submit(url, title){
     console.log("Submitting");
-    query="http://news.ycombinator.com/";
-    options = {
-        host: 'http://news.ycombinator.com',
-        path: 'submitlink?u="+encodeURIComponent(url)+"&t="+encodeURIComponent(title)'
-    }
-//    http.get(options, function(res) {
-//        console.log('STATUS: ' + res.statusCode);
-//        console.log('HEADERS: ' + JSON.stringify(res.headers));
-//    }).on('error', function(e){
-//        console.log('Error: ' + e.message);
-//    });
+    query = "http://news.ycombinator.com/";
+    browser = new Browser();
+    browser.cookies().set("user","JU6FCDMs");
+    browser.visit("http://new.ycombinator.com"+"submitlink?u="+encodeURIComponent(url)+"&t="+encodeURIComponent(title), function () {
+        pressButton("submit", function() {
+            assert.ok(browser.success);
+        })
+    });
 }
