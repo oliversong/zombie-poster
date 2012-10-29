@@ -2,8 +2,6 @@ var FeedParser = require('feedparser');
 var parser = new FeedParser(); // optionally called with an options object
 var fs = require('fs');
 var http = require('http');
-var Browser = require("zombie");
-var assert = require("assert");
 
 // we store articles we've seen in data.csv
 // we call getNew as main
@@ -15,19 +13,34 @@ var assert = require("assert");
 
 // holy shit I'm writing tests!
 // check myCallback
-//
 // check checkExist
-//
 // check getNew
-//
-// check submit
-
 
 // get storage and initiate
 console.log("Instantiating and opening file");
 var current={};
 var shoop=[];
 fs.open('data.csv','a+',0666,getNew);
+
+//get the updated data feed
+function getNew (err,fd){
+    console.log("Getting the current data set");
+
+    if(err) throw err;
+
+    // fd is the file
+    fs.readFile('data.csv','ascii',function(err,data){
+        if(err){
+            console.error("Could not open file: %s", err);
+            process.exit(1);
+        }
+        console.log("Got some data");
+        shoop=data.split(",");
+        console.log(shoop)
+    });
+    //parse things
+    parser.parseUrl('http://feeds.technologyreview.com/technology_review_computing',myCallback);
+}
 
 //parse RSS
 function myCallback (error, meta, article){
@@ -56,41 +69,13 @@ function checkExist (url, title){
                 console.log("The file was saved!");
             }
         });
-        submit(url, title);
+        addQueue(url, title)
     }else{
         console.log("Already seen");
     }
 }
 
-//get the updated data feed
-function getNew (err,fd){
-    console.log("Getting the current data set");
-
-    if(err) throw err;
-
-    // fd is the file
-    fs.readFile('data.csv','ascii',function(err,data){
-        if(err){
-            console.error("Could not open file: %s", err);
-            process.exit(1);
-        }
-        console.log("Got some data");
-        shoop=data.split(",");
-        console.log(shoop)
-    });
-    //parse things
-    parser.parseUrl('http://feeds.technologyreview.com/technology_review_computing',myCallback);
-}
-
-//submit to hackernews
-function submit(url, title){
-    console.log("Submitting");
-    query = "http://news.ycombinator.com/";
-    browser = new Browser();
-    browser.cookies().set("user","JU6FCDMs");
-    browser.visit("http://new.ycombinator.com"+"submitlink?u="+encodeURIComponent(url)+"&t="+encodeURIComponent(title), function () {
-        pressButton("submit", function() {
-            assert.ok(browser.success);
-        })
-    });
+//add entries to the queue, an external file. Entries in the queue will be submitted separately. The entire process will be managed by a bash script.
+function addQueue(url, title){
+    console.log("Added to queue")
 }

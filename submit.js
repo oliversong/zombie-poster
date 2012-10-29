@@ -5,13 +5,13 @@ function submit(url, title){
     console.log("Submitting");
     phantom.addCookie({"name":"user","value":"FwVp29RY","domain":"news.ycombinator.com"});
     casper.start("http://news.ycombinator.com/submitlink?u="+encodeURIComponent(url)+"&t="+encodeURIComponent(title),function(){
-        this.click('form table tbody:nth-child(3) input');
+        this.click('form table tbody tr:nth-child(3) td:last-child input');
     });
     casper.then(function(){
-        console.log("clicked submit, new location is" + this.getCurrentUrl());
+        this.echo("clicked submit, new location is" + this.getCurrentUrl());
     });
     casper.run();
 }
 
-submit("http://www.technologyreview.com/news/506127/connectome/","DNA Sequencing Could Map the Brain's Wiring");
+//submit("http://stackoverflow.com/questions/7474354/include-jquery-in-the-javascript-console","Using jQuery in the console");
 console.log("Submitted, I hope.");
