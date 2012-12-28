@@ -1,4 +1,5 @@
 var casper = require('casper').create();
+var fs = require('fs');
 
 //submit to hackernews
 function submit(url, title){

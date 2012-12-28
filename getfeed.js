@@ -77,5 +77,11 @@ function checkExist (url, title){
 
 //add entries to the queue, an external file. Entries in the queue will be submitted separately. The entire process will be managed by a bash script.
 function addQueue(url, title){
-    console.log("Added to queue")
+    fs.appendFile("queue.csv",title+"*"+url+",",'ascii',function(err){
+        if(err){
+            console.log(err);
+        } else {
+            console.log("The file was saved!");
+        }
+    });
 }
